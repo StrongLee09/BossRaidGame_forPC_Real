@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "782715960683",
+    "firebase_url": "https://unitybossraidgame.firebaseio.com",
+    "project_id": "unitybossraidgame",
+    "storage_bucket": "unitybossraidgame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782715960683:android:1ea3b9a9b7d4eefed7202e",
+        "android_client_info": {
+          "package_name": "com.test.BossRaidGame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782715960683-uc9l34f2nfjt8uoq69utb96svks5gqfk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.test.BossRaidGame",
+            "certificate_hash": "7d57c939820f520cbb222fb1879a94c250d0cbc6"
+          }
+        },
+        {
+          "client_id": "782715960683-o9n94f60s5eaj93rf1l1e5tp10nr824l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDubhHGfrqkoPawVntiTXCUUB9MYN8vPsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782715960683-o9n94f60s5eaj93rf1l1e5tp10nr824l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
