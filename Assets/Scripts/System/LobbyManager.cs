@@ -8,42 +8,24 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    private readonly string gameVersion = "1";
+    #region Public Field
 
     public Text connetionInfoText; //info Text
     public Button joinButton; //join Button
+    public InputField NickNameInput; //NickName Input
+    public UserInfo userInfo; //user Info
+    public GameObject InfoNickName;
+    public Text InfoNickNameText;
+    public Text InfoPanelText;
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-        //게임 버전 = 현재 버전 
-        PhotonNetwork.GameVersion = gameVersion;
+    #endregion
 
-        //포톤에 정보 세팅 
-        PhotonNetwork.ConnectUsingSettings();
+    #region Private Field
+    private readonly string gameVersion = "1";
+    #endregion
 
-        //마스터 서버에 접속 성공하면 버튼 활성화 . . . 
-        joinButton.interactable = false;
+    #region Public Methods
 
-        connetionInfoText.text = "Connection To Master Server. . .";
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        joinButton.interactable = true;
-        connetionInfoText.text = "Online : Connetected to Master Server";
-    }
-
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        //입력이 끊긴 사유 cause
-
-        joinButton.interactable = false;
-        connetionInfoText.text = $"Offline : Connection Disabled {cause.ToString()} - Try reconnecting. . .";
-
-        //재접속 시도
-        PhotonNetwork.ConnectUsingSettings();
-    }
 
     //JOIN 버튼 누를시 접속시도 
     public void Connect()
@@ -65,6 +47,118 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public void SetNickName()
+    {
+        string Input= NickNameInput.text.Trim().Replace(" ","");
+
+        if (Input == "")
+        {
+            PhotonNetwork.LocalPlayer.NickName = "Unknown";
+            userInfo.AddUser(AuthManager.User.Email, "Unknown");
+            userInfo.Save();
+            InfoNickName.SetActive(false);
+            InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
+            Debug.Log("SetUnknown");
+        }
+        else if (FindNickName(Input))
+        {
+            InfoNickNameText.text = "중복된 닉네임입니다. 다시 입력해주세요...";
+        }
+        else
+        {
+            PhotonNetwork.LocalPlayer.NickName = Input;
+            userInfo.AddUser(AuthManager.User.Email, Input);
+            userInfo.Save();
+            InfoNickName.SetActive(false);
+            InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
+            Debug.Log("SetNickName");
+        }
+       
+    }
+
+
+    #endregion
+
+    #region Private Methods
+
+    private bool FindEmail()
+    {
+        userInfo.Load();
+        InfoNickNameText.text = "";
+        for (int i=0; i < userInfo.Player.Count; i++)
+        {
+            if (userInfo.Player[i].userProfiles.UserEmail.Equals(AuthManager.User.Email))
+            {
+                PhotonNetwork.LocalPlayer.NickName = userInfo.Player[i].userProfiles.UserNickname;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool FindNickName(string _nickname)
+    {
+        for (int i = 0; i < userInfo.Player.Count; i++)
+        {
+            if (userInfo.Player[i].userProfiles.UserNickname.Equals(_nickname))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void InfoNickNameOn() => InfoNickName.SetActive(true);
+
+    private void OnApplicationQuit()
+    {
+        userInfo.Player.Clear();
+    }
+
+    #endregion
+
+    #region MonoBehaviour Callback
+    // Start is called before the first frame update
+    private void Start()
+    {
+        if (!FindEmail())
+        {
+            InfoNickNameOn();
+        }
+        
+        //게임 버전 = 현재 버전 
+        PhotonNetwork.GameVersion = gameVersion;
+
+        //포톤에 정보 세팅 
+        PhotonNetwork.ConnectUsingSettings();
+
+        //마스터 서버에 접속 성공하면 버튼 활성화 . . . 
+        joinButton.interactable = false;
+
+        connetionInfoText.text = "Connection To Master Server. . .";
+    }
+
+    #endregion
+
+    #region Pun Callback
+
+    public override void OnConnectedToMaster()
+    {
+        joinButton.interactable = true;
+        connetionInfoText.text = "Online : Connetected to Master Server";
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        //입력이 끊긴 사유 cause
+
+        joinButton.interactable = false;
+        connetionInfoText.text = $"Offline : Connection Disabled {cause.ToString()} - Try reconnecting. . .";
+
+        //재접속 시도
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
     //랜덤접속 실패시 . . . 
     //빈방이 없는 경우 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -82,4 +176,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         //SceneManager.LoadScene(); 나 혼자만 넘어가게됨 ㅋㅋ... 동기화가 되지않아 각자 씬이 생성됌
         PhotonNetwork.LoadLevel("Main");
     }
+    #endregion
+
+
+
+
 }

@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 public class AuthManager : MonoBehaviour
 {
+    #region Singleton
+ 
+    #endregion
+
+    #region Public Field
     public bool IsFirebaseReady { get; private set; }
     public bool IsSignInOnProgress { get; private set; }
 
@@ -19,9 +24,13 @@ public class AuthManager : MonoBehaviour
 
     public static FirebaseApp firebaseApp;
     public static FirebaseAuth firebaseAuth;
-
     public static FirebaseUser User;
+    #endregion
 
+    #region Private Methods
+    #endregion
+
+    #region MonoBehaviour Callback
     void Start()
     {
         signInButton.interactable = false;
@@ -44,9 +53,18 @@ public class AuthManager : MonoBehaviour
             signInButton.interactable = IsFirebaseReady;
         });
     }
+
+    private void Awake()
+    {
+      
+    }
+
+    #endregion
+
+    #region Public Methods
     public void SignIn()
     {
-        if (!IsFirebaseReady || IsSignInOnProgress || User !=null)
+        if (!IsFirebaseReady || IsSignInOnProgress || User != null)
         {
             return;
         }
@@ -77,10 +95,10 @@ public class AuthManager : MonoBehaviour
             }
         });
     }
+    #endregion
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #region Private Methods
+    #endregion
+
+
 }
