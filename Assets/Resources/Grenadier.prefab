@@ -1394,6 +1394,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 1963328077}
   - {fileID: 1963328076}
+  - {fileID: 8530570449716911214}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1481,6 +1482,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62411fd5c7f3e0d47afaf06ec2773df0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AN: {fileID: 8667478999345537774}
+  RB: {fileID: 8977877905566488903}
+  PV: {fileID: 1973200726872519038}
+  NickNameText: {fileID: 3335457699216049368}
+  HealthImage: {fileID: 9081514223464405241}
 --- !u!1 &8667478999355052400
 GameObject:
   m_ObjectHideFlags: 0

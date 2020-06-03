@@ -58,6 +58,7 @@ public class UserInfo : ScriptableObject
     {
         //version 3
         Debug.Log("서버에 저장중 !");
+        
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unitybossraidgame.firebaseio.com/");
         DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
         string saveData = JsonUtility.ToJson(this, true);
