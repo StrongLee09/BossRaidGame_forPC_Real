@@ -81,6 +81,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     #region Private Methods
 
+    //private 
+
     private bool FindEmail()
     {
         userInfo.Load();
@@ -90,6 +92,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             if (userInfo.Player[i].userProfiles.UserEmail.Equals(AuthManager.User.Email))
             {
                 PhotonNetwork.LocalPlayer.NickName = userInfo.Player[i].userProfiles.UserNickname;
+                Debug.Log("아이디 찾음 ");
                 return true;
             }
         }
@@ -121,8 +124,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     private void Start()
     {
+        
         if (!FindEmail())
         {
+            Debug.Log("아이디 못찾음");
             InfoNickNameOn();
         }
         

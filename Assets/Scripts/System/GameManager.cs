@@ -46,11 +46,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         DontDestroyOnLoad(gameObject);
+        PhotonNetwork.SendRate = 60;
+        PhotonNetwork.SerializationRate = 30;
     }
     void Start()
     {
         GameisOver = false;
-        //SpawnPlayer();
+        SpawnPlayer();
 
 
         if (PhotonNetwork.IsMasterClient)
@@ -77,6 +79,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         //if PhotonNetwork.Leave();
         SceneManager.LoadScene("Lobby");
     }
+
+
     #endregion
 
     #region Public Methods
@@ -98,6 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         // A플레이어 세상에서는 A케릭터는 로컬이지만 다른 세상에서는 리모트 플레이어
         // 그래서 Instantiate 하면 안됌 
         PhotonNetwork.Instantiate(PlayerPrefab.name, spawnPosition.position, spawnPosition.rotation);
+        Debug.Log("생성");
     }
 
     private void SpawnBoss()

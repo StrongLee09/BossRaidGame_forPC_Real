@@ -1,10 +1,11 @@
 ﻿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerCtrl : MonoBehaviour
+public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 {
     //추후 부텅있는 Animator 가져올것
     public Animator AN;
@@ -12,6 +13,9 @@ public class PlayerCtrl : MonoBehaviour
     public PhotonView PV;
     public Text NickNameText;
     public Image HealthImage;
+    TouchPad touchPad;
+
+    Vector3 curPos;
 
     //방향관련
     //h: Horizontal
@@ -22,11 +26,13 @@ public class PlayerCtrl : MonoBehaviour
     private void Awake()
     {
         // 닉네임
-        NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
-        NickNameText.color = PV.IsMine ? Color.green : Color.red;
+       // NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
+       // NickNameText.color = PV.IsMine ? Color.green : Color.red;
     }
     void Start()
     {
+        touchPad = GameObject.Find("TouchJoyStick").GetComponent<TouchPad>();
+        touchPad._player = this;
     }
 
     
@@ -63,11 +69,12 @@ public class PlayerCtrl : MonoBehaviour
             {
                 //캐릭터 방향 전환
                 //애니메이터에 전달되지 않고 자체적으로 방향해결
-                transform.GetChild(0).rotation =
+                transform.rotation =
                     Quaternion.LookRotation(new Vector3(h, 0f, v).normalized * Time.deltaTime);
                 RB.transform.Translate(Vector3.forward * Time.deltaTime * 5f );//Charstat.Speed);
             }
-        }
+        }else if((transform.position - curPos).sqrMagnitude >= 100) transform.position = curPos;
+        else transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
     }
 
     [PunRPC]
@@ -117,5 +124,19 @@ public class PlayerCtrl : MonoBehaviour
     public void OnSkillRUp()
     {
         AN.SetBool("SkillR", false);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(HealthImage.fillAmount);
+        }
+        else
+        {
+            curPos = (Vector3)stream.ReceiveNext();
+            HealthImage.fillAmount = (float)stream.ReceiveNext();
+        }
     }
 }
