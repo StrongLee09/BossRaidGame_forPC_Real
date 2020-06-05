@@ -33,6 +33,7 @@ public class AuthManager : MonoBehaviour
     #region MonoBehaviour Callback
     void Start()
     {
+
         signInButton.interactable = false;
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(continuationAction: task =>
         {
@@ -56,7 +57,6 @@ public class AuthManager : MonoBehaviour
 
     private void Awake()
     {
-      
     }
 
     #endregion

@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         DontDestroyOnLoad(gameObject);
+        
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
     }

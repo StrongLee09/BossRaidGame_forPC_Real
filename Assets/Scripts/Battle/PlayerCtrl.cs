@@ -7,13 +7,29 @@ using UnityEngine.UI;
 
 public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 {
-    //추후 부텅있는 Animator 가져올것
+
+    //중력값
+    const float GravityPower = 9.8f;
+    //목적지에 도착했다고 보는 정지 거리.
+    const float StoppingDistance = 0.6f;
+
+    //현재 이동 속도
+    Vector3 velocity = Vector3.zero; //0,0,0
+    
+    //추후 붙어있는 Animator 가져올것
     public Animator AN;
     public Rigidbody RB;
     public PhotonView PV;
     public Text NickNameText;
     public Image HealthImage;
     TouchPad touchPad;
+
+
+    //강제로 향하게 하고 싶은 방향
+    Vector3 forceRotateDirection;
+
+    //목적지
+    public Vector3 destination;
 
     Vector3 curPos;
 
