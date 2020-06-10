@@ -166,11 +166,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connetionInfoText: {fileID: 3554858240869290272}
   joinButton: {fileID: 3554858240869290271}
+  SetNickButton: {fileID: 992663660}
   NickNameInput: {fileID: 1082562748}
-  userInfo: {fileID: 11400000, guid: b7ae06437d7aafb469fadbc4902381dd, type: 2}
   InfoNickName: {fileID: 243287952}
   InfoNickNameText: {fileID: 534585673}
   InfoPanelText: {fileID: 1682145436}
+  Input: 
 --- !u!1 &74394889
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +562,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC911\uBCF5\uB41C \uC544\uC774\uB514\uC785\uB2C8\uB2E4."
+  m_Text: 
 --- !u!222 &534585674
 CanvasRenderer:
   m_ObjectHideFlags: 0

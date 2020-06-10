@@ -28,9 +28,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Transform spawnBossPosition;
     public GameObject PlayerPrefab;
     public GameObject BossPrefab;
+    
     #endregion
 
     #region Private Fields
+
     #endregion
 
     #region MonoBehaviour Callback
@@ -58,7 +60,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            //SpawnBoss
+            SpawnBoss();
 
         }
     }

@@ -7,12 +7,11 @@ using Firebase.Extensions;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using System.Threading;
+using System.IO;
 
 public class AuthManager : MonoBehaviour
 {
-    #region Singleton
- 
-    #endregion
 
     #region Public Field
     public bool IsFirebaseReady { get; private set; }
@@ -22,12 +21,13 @@ public class AuthManager : MonoBehaviour
     public InputField passwordField;
     public Button signInButton;
 
-    public static FirebaseApp firebaseApp;
-    public static FirebaseAuth firebaseAuth;
-    public static FirebaseUser User;
+
     #endregion
 
     #region Private Methods
+
+
+
     #endregion
 
     #region MonoBehaviour Callback
@@ -46,17 +46,26 @@ public class AuthManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("접속 성공");
                 IsFirebaseReady = true;
-                firebaseApp = FirebaseApp.DefaultInstance;
-                firebaseAuth = FirebaseAuth.DefaultInstance;
+               UserDataManager.Instance.firebaseApp= FirebaseApp.DefaultInstance;
+                UserDataManager.Instance.firebaseAuth = FirebaseAuth.DefaultInstance;
+                signInButton.interactable = IsFirebaseReady;
             }
 
             signInButton.interactable = IsFirebaseReady;
+            Debug.Log(IsFirebaseReady);
         });
     }
 
-    private void Awake()
+    private void Update()
     {
+        if (UserDataManager.Instance.isloading == true)
+        {
+            Debug.Log("로드 로비씬");
+            SceneManager.LoadScene("Lobby");
+            UserDataManager.Instance.isloading = false;
+        }
     }
 
     #endregion
@@ -64,7 +73,7 @@ public class AuthManager : MonoBehaviour
     #region Public Methods
     public void SignIn()
     {
-        if (!IsFirebaseReady || IsSignInOnProgress || User != null)
+        if (!IsFirebaseReady || IsSignInOnProgress || UserDataManager.Instance.User != null)
         {
             return;
         }
@@ -72,7 +81,7 @@ public class AuthManager : MonoBehaviour
         IsSignInOnProgress = true;
         signInButton.interactable = false;
 
-        firebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text).ContinueWithOnMainThread((task) =>
+        UserDataManager.Instance.firebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text).ContinueWithOnMainThread((task) =>
         {
 
             Debug.Log(message: $"Sign in status : {task.Status}");
@@ -89,9 +98,10 @@ public class AuthManager : MonoBehaviour
             }
             else
             {
-                User = task.Result;
-                Debug.Log(User.Email);
-                SceneManager.LoadScene("Lobby");
+                UserDataManager.Instance.User = task.Result;
+                UserDataManager.Instance.SetUserId();
+                UserDataManager.Instance.SearchUser();
+                Debug.Log(UserDataManager.Instance.User.Email);
             }
         });
     }

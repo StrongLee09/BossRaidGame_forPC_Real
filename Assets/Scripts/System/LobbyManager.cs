@@ -12,12 +12,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public Text connetionInfoText; //info Text
     public Button joinButton; //join Button
+    public Button SetNickButton; //set Nickname Button
     public InputField NickNameInput; //NickName Input
-    public UserInfo userInfo; //user Info
     public GameObject InfoNickName;
     public Text InfoNickNameText;
     public Text InfoPanelText;
-
+    public string Input;
     #endregion
 
     #region Private Field
@@ -30,6 +30,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     //JOIN 버튼 누를시 접속시도 
     public void Connect()
     {
+        
         //중복 접속 방지
         joinButton.interactable = false;
 
@@ -49,31 +50,78 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void SetNickName()
     {
-        string Input= NickNameInput.text.Trim().Replace(" ","");
-
+        Input = NickNameInput.text.Trim().Replace(" ", "");
+        Debug.Log(Input);
+        SetNickButton.interactable = false;
+        //아무것도 입력안하면 Unknown으로 
         if (Input == "")
         {
             PhotonNetwork.LocalPlayer.NickName = "Unknown";
-            userInfo.AddUser(AuthManager.User.Email, "Unknown");
-            userInfo.Save();
+            UserDataManager.Instance.SetUserNickName("Unknown");
             InfoNickName.SetActive(false);
             InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
             Debug.Log("SetUnknown");
+            SetNickButton.interactable = true;
+            StopCoroutine("isFindNickName");
+            return;
         }
-        else if (FindNickName(Input))
-        {
-            InfoNickNameText.text = "중복된 닉네임입니다. 다시 입력해주세요...";
+        else if(Input.Length >6){
+            InfoNickNameText.text = "닉네임은 6글자이하로 정해야합니다.";
+            Debug.Log("닉네임이 존나깁니다.");
+            SetNickButton.interactable = true;
+            StopCoroutine("isFindNickName");
+            return;
         }
         else
         {
-            PhotonNetwork.LocalPlayer.NickName = Input;
-            userInfo.AddUser(AuthManager.User.Email, Input);
-            userInfo.Save();
-            InfoNickName.SetActive(false);
-            InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
-            Debug.Log("SetNickName");
+            Debug.Log("검색하기");
+            FindNickName(Input);
+            UserDataManager.Instance.isloading = false;
+            StartCoroutine("isFindNickName");
+            return;
         }
+        ////입력한 닉네임으로 설정됌. . .
+        //else
+        //{
+        //    PhotonNetwork.LocalPlayer.NickName = Input;
+        //    UserDataManager.Instance.SetUserNickName(Input);
+        //    InfoNickName.SetActive(false);
+        //    InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
+        //    Debug.Log("SetNickName");
+        //    return;
+        //}
        
+    }
+
+    public void existNick()
+    {
+        InfoNickNameText.text = "중복된 닉네임입니다 다시 입력해주세요.";
+        SetNickButton.interactable = true;
+    }
+
+    public void nonNick()
+    {
+        PhotonNetwork.LocalPlayer.NickName = Input;
+        InfoNickName.SetActive(false);
+        InfoPanelText.text = $"Welcome to {PhotonNetwork.LocalPlayer.NickName}";
+    }
+
+    IEnumerator isFindNickName()
+    {
+        yield return new WaitUntil(() => UserDataManager.Instance.isloading);
+        if(UserDataManager.Instance.isfind == true)
+        {
+            Debug.Log("존재하는 닉네임");
+            existNick();
+            StopCoroutine("isFindNickName");
+           
+        }
+        else
+        {
+            Debug.Log("ㅊㅋㅊㅋ");
+            nonNick();
+            StopCoroutine("isFindNickName");
+        }
     }
 
 
@@ -83,40 +131,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     //private 
 
-    private bool FindEmail()
-    {
-        userInfo.Load();
-        InfoNickNameText.text = "";
-        for (int i=0; i < userInfo.Player.Count; i++)
-        {
-            if (userInfo.Player[i].userProfiles.UserEmail.Equals(AuthManager.User.Email))
-            {
-                PhotonNetwork.LocalPlayer.NickName = userInfo.Player[i].userProfiles.UserNickname;
-                Debug.Log("아이디 찾음 ");
-                return true;
-            }
-        }
-        return false;
+    private void FindNickName(string Input)=>UserDataManager.Instance.SearchUserNickName(Input);
+
+    //닉네임 입력창
+    private void InfoNickNameOn() 
+    { 
+        InfoNickName.SetActive(true); 
+        InfoNickNameText.text = "처음이시군요 닉네임을 정해주세요...(6글자 이하)";
     }
 
-    private bool FindNickName(string _nickname)
-    {
-        for (int i = 0; i < userInfo.Player.Count; i++)
-        {
-            if (userInfo.Player[i].userProfiles.UserNickname.Equals(_nickname))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    private void InfoNickNameOn() => InfoNickName.SetActive(true);
-
-    private void OnApplicationQuit()
-    {
-        userInfo.Player.Clear();
-    }
 
     #endregion
 
@@ -124,9 +148,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     private void Start()
     {
-        
-        if (!FindEmail())
+        if (UserDataManager.Instance.isUserfirst)
         {
+            //처음으로 접속한 유저면
+            //닉네임 입력란 활성화 되고 버튼 누르면 SetNickName 함수 작동 ...
             Debug.Log("아이디 못찾음");
             InfoNickNameOn();
         }

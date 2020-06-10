@@ -6,7 +6,6 @@ using Firebase;
 using Firebase.Unity.Editor;
 using Firebase.Database;
 
-[CreateAssetMenu(fileName = "New User Profile", menuName = "DataBase System/Users/Profile")]
 public class UserInfo : ScriptableObject
 {
     public List<PlayerContainer> Player = new List<PlayerContainer>();
@@ -53,6 +52,24 @@ public class UserInfo : ScriptableObject
         
     }
 
+    //데이터 베이스와 연결 되었나 확인해주는 함수
+    [ContextMenu("isConnect")]
+    public bool isConnect()
+    {
+        FirebaseDatabase.DefaultInstance.GetReferenceFromUrl("https://unitybossraidgame.firebaseio.com/");
+        DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
+        string isconnect = reference.GetValueAsync().Result.Child("isConnect").GetRawJsonValue();
+        if(isconnect == "true")
+        {
+            Debug.Log("앙 연결됨 ~" +isconnect);
+            return true;
+        }
+        return false;
+             
+    }
+
+
+    //데이터 베이스 저장하는 함수 
     [ContextMenu("Save")]
     public void Save()
     {
@@ -66,6 +83,7 @@ public class UserInfo : ScriptableObject
         Debug.Log("서버에 저장하기 성공 !");
     }
 
+    //데이터 베이스 로드 하는 함수 
     [ContextMenu("Load")]
     public void Load()
     {
@@ -106,6 +124,36 @@ public class UserInfo : ScriptableObject
             Debug.Log("로드완료");
         });
     }
+
+    //데이터 베이스에서 유저 검색 하는 함수
+    [ContextMenu("Search")]
+    public bool Search(string findUser)
+    {
+        FirebaseDatabase.DefaultInstance.GetReferenceFromUrl("https://unitybossraidgame.firebaseio.com/");
+        DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
+        reference.GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                //Handle the error....
+                Debug.Log("Handle the error");
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                if (snapshot.Child("Players").HasChildren)
+                {
+                }
+                else
+                {
+                    Debug.Log("데이터 없음");
+                }
+            }
+        });
+        return false;
+    }
+
+ 
 
     [ContextMenu("Clear")]
     public void Clear()

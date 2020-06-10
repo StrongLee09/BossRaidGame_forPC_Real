@@ -12,9 +12,9 @@ public class PlayerNameText : MonoBehaviour
     {
         nameText = GetComponent<Text>();
 
-        if(AuthManager.User != null)
+        if(UserDataManager.Instance.User != null)
         {
-            nameText.text = $"Hi! {AuthManager.User.Email}";
+            nameText.text = $"Hi! {UserDataManager.Instance.User.Email}";
         }
 
         else
